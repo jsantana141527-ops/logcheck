@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="LogCheck - Diário de Bordo" />
+  <title>LogCheck - Diário de Bordo</title>
+  <link rel="manifest" id="manifestLink" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg2: #111827;
+      --panel: rgba(15, 23, 42, 0.92);
+      --panel-2: rgba(17, 24, 39, 0.96);
+      --card: rgba(15, 23, 42, 0.82);
+      --line: rgba(148, 163, 184, 0.18);
+      --primary: #38bdf8;
+      --primary-2: #0ea5e9;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --shadow: 0 18px 45px rgba(2, 6, 23, 0.45);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(14, 165, 233, 0.18), transparent 30%),
+        linear-gradient(180deg, #020817 0%, #0f172a 100%);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 12px;
+    }
+
+    .app-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .topbar {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      margin-bottom: 18px;
+      position: sticky;
+      top: 8px;
+      z-index: 2;
+    }
+
+    .brand small {
+      color: var(--muted);
+      display: block;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 2px 0 0;
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      line-height: 1.1;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      padding: 0.82rem 1rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.25);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #04111c;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #34d399, #10b981);
+      color: #052e1b;
+    }
+
+    .btn-secondary {
+      background: rgba(148, 163, 184, 0.12);
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 0.42rem 0.7rem;
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 720px) {
+      .grid.two { grid-template-columns: 1fr 1fr; }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 0.74rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    input, select, textarea, button {
+      font: inherit;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text);
+      padding: 0.8rem 0.9rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(56, 189, 248, 0.7);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .gps-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .gps-row input {
+      flex: 1;
+    }
+
+    .gps-display {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.78rem 0.9rem;
+      color: var(--muted);
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .gps-display.success {
+      color: var(--success);
+      border-color: rgba(52, 211, 153, 0.35);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .radio-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 0.5rem 0 0;
+    }
+
+    .radio-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      padding: 0.64rem 0.8rem;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.7);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .radio-wrap input[type="radio"] {
+      accent-color: var(--primary);
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .search-result {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .result-item {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.72);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 12px 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .result-item:hover {
+      border-color: rgba(56, 189, 248, 0.7);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .result-item strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .result-meta {
+      color: var(--muted);
+      font-size: 0.85rem;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .selected-frete {
+      background: rgba(56, 189, 248, 0.06);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .calc-box {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95));
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 14px;
+    }
+
+    .calc-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 640px) {
+      .calc-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    .mini {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-weight: 700;
+    }
+
+    .calc-val {
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-weight: 800;
+      margin-top: 4px;
+      color: var(--text);
+    }
+
+    .status-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .status-pill {
+      padding: 0.45rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 1px solid var(--line);
+    }
+
+    .status-open { background: rgba(56, 189, 248, 0.1); color: #7dd3fc; border-color: rgba(56, 189, 248, 0.2); }
+    .status-closed { background: rgba(52, 211, 153, 0.1); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.2); }
+
+    .list-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    @media (min-width: 860px) {
+      .list-group {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .list-wrap {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-card {
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .list-card h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .list-card .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+
+    .list-card .small {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .empty {
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.4);
+    }
+
+    .photo-preview {
+      display: none;
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      margin-top: 12px;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <small>Frete em campo</small>
+        <h1>LogCheck</h1>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="btn btn-secondary" id="exportCsvBtn">Exportar CSV</button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="card">
+        <div class="card-header">
+          <h2>ETAPA 1 - Carregamento / Saída</h2>
+          <span class="badge">Início do frete</span>
+        </div>
+
+        <form id="saidaForm">
+          <div class="grid two">
+            <div class="field">
+              <label for="placaSaida">Placa do conjunto</label>
+              <input id="placaSaida" type="text" placeholder="Ex.: ABC1D23" maxlength="12" />
+            </div>
+
+            <div class="field">
+              <label for="documentoMotorista">Documento do motorista</label>
+              <input id="documentoMotorista" type="text" placeholder="CPF / CNH" />
+            </div>
+
+            <div class="field">
+              <label for="kmSaida">KM de saída</label>
+              <input id="kmSaida" type="number" step="0.1" min="0" placeholder="000000" />
+            </div>
+
+            <div class="field">
+              <label for="horimetroSaida">Horímetro de saída</label>
+              <input id="horimetroSaida" type="number" step="0.1" min="0" placeholder="0000" />
+            </div>
+
+            <div class="field">
+              <label for="oleoLitros">Litros de óleo</label>
+              <input id="oleoLitros" type="number" step="0.1" min="0" placeholder="0,00" />
+            </div>
+
+            <div class="field">
+              <label for="notaFiscalSaida">Número da Nota Fiscal</label>
+              <input id="notaFiscalSaida" type="text" placeholder="NF / Documento fiscal" />
+            </div>
+
+            <div class="field">
+              <label for="pedidoSaida">Número do pedido</label>
+              <input id="pedidoSaida" type="text" placeholder="Pedido / ordem" />
+            </div>
+
+            <div class="field">
+              <label for="toneladasCarregadas">Toneladas carregadas</label>
+              <input id="toneladasCarregadas" type="number" step="0.01" min="0" placeholder="0,00" />
+            </div>
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <label>Localização GPS de saída</label>
+              <div class="gps-row">
+                <button type="button" class="btn btn-primary" id="captureGpsSaidaBtn">Capturar Localização GPS</button>
+                <div id="gpsSaidaStatus" class="gps-display">Ainda não capturada</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-actions">
+            <button type="submit" class="btn btn-success" id="salvarSaidaBtn">Salvar saída</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>ETAPA 2 - Descarregamento / Fechamento</h2>
+          <span class="badge">Nova etapa</span>
+        </div>
+
+        <div class="search-row">
+          <input id="searchFreteInput" type="text" placeholder="Buscar frete aberto pela Placa ou NF" />
+          <button type="button" class="btn btn-secondary" id="buscarFreteBtn">Buscar</button>
+        </div>
+
+        <div id="freteSelecionadoResumo" class="selected-frete">
+          Nenhum frete selecionado. Busque por placa ou NF para abrir o fechamento.
+        </div>
+
+        <div class="search-result">
+          <div id="fretesAbertosList" class="search-result"></div>
+        </div>
+
+        <form id="fechamentoForm">
+          <div class="grid two">
+            <div class="field">
+              <label for="placaFechamento">Placa do conjunto</label>
+              <input id="placaFechamento" type="text" readonly />
+            </div>
+
+            <div class="field">
+              <label for="nfFechamento">NF do frete</label>
+              <input id="nfFechamento" type="text" readonly />
+            </div>
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <label>Localização GPS de chegada</label>
+              <div class="gps-row">
+                <button type="button" class="btn btn-primary" id="captureGpsChegadaBtn">Capturar Localização GPS</button>
+                <div id="gpsChegadaStatus" class="gps-display">Ainda não capturada</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="kmChegada">KM de chegada</label>
+              <input id="kmChegada" type="number" step="0.1" min="0" placeholder="000000" />
+            </div>
+
+            <div class="field">
+              <label for="horimetroChegada">Horímetro de chegada</label>
+              <input id="horimetroChegada" type="number" step="0.1" min="0" placeholder="0000" />
+            </div>
+
+            <div class="field">
+              <label for="dataHoraChegada">Data/hora de chegada</label>
+              <input id="dataHoraChegada" type="datetime-local" />
+            </div>
+
+            <div class="field">
+              <label for="toneladasDescarregadas">Quantidade descarregada (ton)</label>
+              <input id="toneladasDescarregadas" type="number" step="0.01" min="0" placeholder="0,00" />
+            </div>
+
+            <div class="field">
+              <label>Ocorrência / Avaria</label>
+              <div class="radio-row">
+                <label class="radio-wrap">
+                  <input type="radio" name="ocorrencia" value="sim" />
+                  Sim
+                </label>
+                <label class="radio-wrap">
+                  <input type="radio" name="ocorrencia" value="nao" checked />
+                  Não
+                </label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="descricaoOcorrencia">Descrição da ocorrência</label>
+              <textarea id="descricaoOcorrencia" placeholder="Descreva avaria, atraso, incidente etc."></textarea>
+            </div>
+
+            <div class="field">
+              <label for="tempoEsperaHoras">Tempo de espera para descarregar (horas)</label>
+              <input id="tempoEsperaHoras" type="number" step="0.1" min="0" placeholder="0,0" />
+            </div>
+
+            <div class="field">
+              <label for="combustivelGasto">Combustível gasto (L) – opcional</label>
+              <input id="combustivelGasto" type="number" step="0.1" min="0" placeholder="0,00" />
+            </div>
+
+            <div class="field">
+              <label for="custoFrete">Custo total do frete (R$) – opcional</label>
+              <input id="custoFrete" type="number" step="0.01" min="0" placeholder="0,00" />
+            </div>
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <label for="fotoComprovante">Foto do comprovante de entrega</label>
+              <input id="fotoComprovante" type="file" accept="image/*" />
+              <img id="fotoPreview" class="photo-preview" alt="Preview do comprovante" />
+            </div>
+          </div>
+
+          <div class="calc-box">
+            <div class="mini">Cálculos automáticos</div>
+            <div class="calc-grid">
+              <div>
+                <div class="mini">KM rodado</div>
+                <div class="calc-val" id="kmRodadoOutput">0 km</div>
+              </div>
+              <div>
+                <div class="mini">Consumo médio</div>
+                <div class="calc-val" id="consumoMedioOutput">0 km/L</div>
+              </div>
+              <div>
+                <div class="mini">Custo por KM</div>
+                <div class="calc-val" id="custoPorKmOutput">R$ 0,00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-actions">
+            <button type="submit" class="btn btn-success" id="fecharFreteBtn">Fechar frete</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Fretes</h2>
+        </div>
+
+        <div class="list-group">
+          <div>
+            <div class="card-header" style="margin-bottom: 12px;">
+              <h2 style="font-size:1.15rem;">Abertos</h2>
+            </div>
+            <div id="listaFretesAbertos" class="list-wrap"></div>
+          </div>
+
+          <div>
+            <div class="card-header" style="margin-bottom: 12px;">
+              <h2 style="font-size:1.15rem;">Fechados</h2>
+            </div>
+            <div id="listaFretesFechados" class="list-wrap"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'logcheck-fretes-v1';
+      let fretes = loadFretes();
+      let selectedFreteId = null;
+
+      const formSaida = document.getElementById('saidaForm');
+      const formFechamento = document.getElementById('fechamentoForm');
+
+      const searchInput = document.getElementById('searchFreteInput');
+      const resultList = document.getElementById('fretesAbertosList');
+      const selectedSummary = document.getElementById('freteSelecionadoResumo');
+
+      function loadFretes() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveFretes() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(fretes));
+        renderLists();
+      }
+
+      function guid() {
+        if (window.crypto && crypto.randomUUID) {
+          return crypto.randomUUID();
+        }
+        return 'frete-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+      }
+
+      function toNumber(value, fallback = 0) {
+        const n = Number(String(value ?? '').replace(',', '.'));
+        return Number.isFinite(n) ? n : fallback;
+      }
+
+      function formatBRNumber(value, decimals = 2) {
+        return Number(value || 0).toLocaleString('pt-BR', {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals
+        });
+      }
+
+      function formatMoney(value) {
+        return new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        }).format(Number(value || 0));
+      }
+
+      function dateForInput(dateValue) {
+        if (!dateValue) return '';
+        const d = new Date(dateValue);
+        const off = d.getTimezoneOffset();
+        const fixed = new Date(d.getTime() - off * 60000);
+        return fixed.toISOString().slice(0, 16);
+      }
+
+      function setGpsStatus(elId, text, success = false) {
+        const el = document.getElementById(elId);
+        el.textContent = text;
+        el.classList.toggle('success', success);
+      }
+
+      function captureLocation(targetStatusId, targetLatId, targetLngId) {
+        if (!navigator.geolocation) {
+          alert('Geolocalização não suportada neste navegador.');
+          return;
+        }
+
+        const statusEl = document.getElementById(targetStatusId);
+        statusEl.textContent = 'Capturando...';
+        statusEl.classList.remove('success');
+
+        navigator.geolocation.getCurrentPosition((position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lng = position.coords.longitude.toFixed(6);
+          const accuracy = position.coords.accuracy ? ` • precisão ~ ${Math.round(position.coords.accuracy)}m` : '';
+
+          document.getElementById(targetLatId).value = lat;
+          document.getElementById(targetLngId).value = lng;
+
+          setGpsStatus(targetStatusId, `${lat}, ${lng}${accuracy}`, true);
+        }, (error) => {
+          setGpsStatus(targetStatusId, 'Falha ao capturar GPS. Tente novamente.', false);
+          console.error(error);
+        }, {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 0
+        });
+      }
+
+      function findFretesByTerm(term) {
+        const query = term.trim().toLowerCase();
+        if (!query) return fretes.filter(f => f.status === 'aberto');
+        return fretes.filter((f) => {
+          if (f.status !== 'aberto') return false;
+          const plate = String(f.placa || '').toLowerCase();
+          const nf = String(f.notaFiscal || '').toLowerCase();
+          return plate.includes(query) || nf.includes(query);
+        });
+      }
+
+      function renderOpenSearchResults(items) {
+        resultList.innerHTML = '';
+
+        if (!items.length) {
+          resultList.innerHTML = '<div class=\"empty\">Nenhum frete aberto encontrado.</div>';
+          return;
+        }
+
+        items.forEach((item) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'result-item';
+          button.dataset.id = item.id;
+
+          button.innerHTML = `
+            <strong>${item.placa || 'Placa não informada'}</strong>
+            <div class="result-meta">
+              <span>NF: ${item.notaFiscal || '—'}</span>
+              <span>Saída: ${item.dataSaida ? new Date(item.dataSaida).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—'}</span>
+            </div>
+          `;
+
+          button.addEventListener('click', () => {
+            selectFrete(item.id);
+          });
+
+          resultList.appendChild(button);
+        });
+      }
+
+      function renderLists() {
+        const abertos = fretes.filter((f) => f.status === 'aberto');
+        const fechados = fretes.filter((f) => f.status === 'fechado');
+
+        renderListContainer('listaFretesAbertos', abertos, 'Aberto');
+        renderListContainer('listaFretesFechados', fechados, 'Fechado');
+
+        const currentSearch = searchInput.value.trim();
+        if (!currentSearch) {
+          renderOpenSearchResults(abertos);
+        } else {
+          renderOpenSearchResults(findFretesByTerm(currentSearch));
+        }
+      }
+
+      function renderListContainer(containerId, items, statusLabel) {
+        const container = document.getElementById(containerId);
+
+        if (!items.length) {
+          container.innerHTML = '<div class=\"empty\">Nenhum frete ' + (statusLabel === 'Aberto' ? 'aberto' : 'fechado') + '.</div>';
+          return;
+        }
+
+        container.innerHTML = items.map((item) => {
+          const statusClass = item.status === 'aberto' ? 'status-open' : 'status-closed';
+          const displayDate = item.dataSaida || item.dataChegada || '';
+
+          return `
+            <div class="list-card">
+              <h4>${item.placa || 'Placa não informada'}</h4>
+              <div class="meta">
+                <span class="status-pill ${statusClass}">${item.status === 'aberto' ? 'Aberto' : 'Fechado'}</span>
+                <span>NF: ${item.notaFiscal || '—'}</span>
+              </div>
+              <div class="small">
+                Pedido: ${item.pedido || '—'}<br>
+                Saída: ${displayDate ? new Date(displayDate).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—'}<br>
+                KM saída: ${formatBRNumber(item.kmSaida, 1)}<br>
+                ${item.status === 'fechado'
+                  ? 'KM chegada: ' + formatBRNumber(item.kmChegada, 1) + '<br>KM rodado: ' + formatBRNumber(item.kmRodado, 1)
+                  : 'Toneladas: ' + formatBRNumber(item.toneladasCarregadas, 2)}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function selectFrete(id) {
+        const item = fretes.find((f) => f.id === id);
+
+        if (!item) return;
+
+        selectedFreteId = id;
+
+        selectedSummary.innerHTML = `
+          <strong>Frete selecionado:</strong><br>
+          Placa: <b>${item.placa || '—'}</b> • NF: <b>${item.notaFiscal || '—'}</b><br>
+          Saída em: ${new Date(item.dataSaida || Date.now()).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}<br>
+          KM saída: ${formatBRNumber(item.kmSaida, 1)} • Toneladas: ${formatBRNumber(item.toneladasCarregadas, 2)}
+        `;
+
+        document.getElementById('placaFechamento').value = item.placa || '';
+        document.getElementById('nfFechamento').value = item.notaFiscal || '';
+
+        // limpar campos de fechamento
+        formFechamento.reset();
+        document.querySelector('input[name="ocorrencia"][value="nao"]').checked = true;
+
+        // repopular gps display empty
+        setGpsStatus('gpsChegadaStatus', 'Ainda não capturada', false);
+
+        // limpar preview da foto
+        const preview = document.getElementById('fotoPreview');
+        preview.src = '';
+        preview.style.display = 'none';
+
+        document.getElementById('kmChegada').value = '';
+        document.getElementById('horimetroChegada').value = '';
+        document.getElementById('dataHoraChegada').value = '';
+        document.getElementById('toneladasDescarregadas').value = '';
+        document.getElementById('descricaoOcorrencia').value = '';
+        document.getElementById('tempoEsperaHoras').value = '';
+        document.getElementById('combustivelGasto').value = '';
+        document.getElementById('custoFrete').value = '';
+        document.getElementById('fotoComprovante').value = '';
+
+        atualizarCalculados();
+      }
+
+      function atualizarCalculados() {
+        const selected = fretes.find((f) => f.id === selectedFreteId);
+
+        const kmChegada = toNumber(document.getElementById('kmChegada').value, 0);
+        const kmSaida = selected ? toNumber(selected.kmSaida, 0) : 0;
+        const combustivelGasto = toNumber(document.getElementById('combustivelGasto').value, 0);
+        const custoTotal = toNumber(document.getElementById('custoFrete').value, 0);
+
+        const kmRodado = Math.max(0, kmChegada - kmSaida);
+        const consumoMedio = combustivelGasto > 0 ? kmRodado / combustivelGasto : 0;
+        const custoPorKm = kmRodado > 0 && custoTotal > 0 ? custoTotal / kmRodado : 0;
+
+        document.getElementById('kmRodadoOutput').textContent = `${formatBRNumber(kmRodado, 1)} km`;
+        document.getElementById('consumoMedioOutput').textContent = `${formatBRNumber(consumoMedio, 2)} km/L`;
+        document.getElementById('custoPorKmOutput').textContent = formatMoney(custoPorKm);
+      }
+
+      function atualizarFechamentoGuardando() {
+        atualizarCalculados();
+      }
+
+      function readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function salvarSaida(event) {
+        event.preventDefault();
+
+        const placa = document.getElementById('placaSaida').value.trim().toUpperCase();
+        const documento = document.getElementById('documentoMotorista').value.trim();
+        const kmSaida = toNumber(document.getElementById('kmSaida').value, 0);
+        const horimetroSaida = toNumber(document.getElementById('horimetroSaida').value, 0);
+        const litrosOleo = toNumber(document.getElementById('oleoLitros').value, 0);
+        const notaFiscal = document.getElementById('notaFiscalSaida').value.trim();
+        const pedido = document.getElementById('pedidoSaida').value.trim();
+        const toneladasCarregadas = toNumber(document.getElementById('toneladasCarregadas').value, 0);
+
+        if (!placa || !documento || !notaFiscal) {
+          alert('Preencha placa, documento do motorista e NF para salvar a saída.');
+          return;
+        }
+
+        const lat = document.getElementById('gpsSaidaLat')?.value || '';
+        const lng = document.getElementById('gpsSaidaLng')?.value || '';
+
+        const novoFrete = {
+          id: guid(),
+          status: 'aberto',
+          placa,
+          documentoMotorista: documento,
+          kmSaida,
+          horimetroSaida,
+          litrosOleo,
+          notaFiscal,
+          pedido,
+          toneladasCarregadas,
+          gpsSaida: {
+            lat,
+            lng,
+            capturada: Boolean(lat && lng)
+          },
+          dataSaida: new Date().toISOString()
+        };
+
+        fretes.push(novoFrete);
+        saveFretes();
+
+        formSaida.reset();
+        setGpsStatus('gpsSaidaStatus', 'Ainda não capturada', false);
+
+        alert('Saída salva com sucesso!');
+      }
+
+      async function fecharFrete(event) {
+        event.preventDefault();
+
+        if (!selectedFreteId) {
+          alert('Selecione um frete aberto antes de fechar.');
+          return;
+        }
+
+        const selected = fretes.find((f) => f.id === selectedFreteId);
+        if (!selected) {
+          alert('Frete selecionado não foi encontrado.');
+          return;
+        }
+
+        const kmChegada = toNumber(document.getElementById('kmChegada').value, 0);
+        const horimetroChegada = toNumber(document.getElementById('horimetroChegada').value, 0);
+        const dataHoraChegada = document.getElementById('dataHoraChegada').value;
+        const toneladasDescarregadas = toNumber(document.getElementById('toneladasDescarregadas').value, 0);
+        const tempoEspera = toNumber(document.getElementById('tempoEsperaHoras').value, 0);
+        const combustivelGasto = toNumber(document.getElementById('combustivelGasto').value, 0);
+        const custoTotal = toNumber(document.getElementById('custoFrete').value, 0);
+
+        if (!kmChegada || !dataHoraChegada) {
+          alert('Informe o KM de chegada e a data/hora de chegada para fechar o frete.');
+          return;
+        }
+
+        let fotoComprovante = '';
+
+        const fileInput = document.getElementById('fotoComprovante');
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+          fotoComprovante = await readFileAsDataURL(fileInput.files[0]);
+        }
+
+        const ocorrenciaInput = document.querySelector('input[name="ocorrencia"]:checked');
+        const ocorrencia = ocorrenciaInput ? ocorrenciaInput.value : 'nao';
+        const descricaoOcorrencia = document.getElementById('descricaoOcorrencia').value.trim();
+
+        const kmRodado = Math.max(0, kmChegada - toNumber(selected.kmSaida, 0));
+        const consumoMedio = combustivelGasto > 0 ? kmRodado / combustivelGasto : 0;
+        const custoPorKm = kmRodado > 0 && custoTotal > 0 ? custoTotal / kmRodado : 0;
+
+        selected.status = 'fechado';
+        selected.kmChegada = kmChegada;
+        selected.horimetroChegada = horimetroChegada;
+        selected.dataChegada = new Date(dataHoraChegada).toISOString();
+        selected.toneladasDescarregadas = toneladasDescarregadas;
+        selected.ocorrencia = ocorrencia;
+        selected.descricaoOcorrencia = descricaoOcorrencia;
+        selected.tempoEsperaHoras = tempoEspera;
+        selected.combustivelGasto = combustivelGasto;
+        selected.custoFrete = custoTotal;
+        selected.fotoComprovante = fotoComprovante;
+        selected.gpsChegada = {
+          lat: document.getElementById('gpsChegadaLat')?.value || '',
+          lng: document.getElementById('gpsChegadaLng')?.value || '',
+          capturada: Boolean(document.getElementById('gpsChegadaLat')?.value && document.getElementById('gpsChegadaLng')?.value)
+        };
+        selected.kmRodado = kmRodado;
+        selected.consumoMedio = consumoMedio;
+        selected.custoPorKm = custoPorKm;
+
+        saveFretes();
+
+        selectedSummary.innerHTML = `
+          <strong>Frete fechado com sucesso.</strong><br>
+          Placa: <b>${selected.placa || '—'}</b> • NF: <b>${selected.notaFiscal || '—'}</b><br>
+          KM rodado: ${formatBRNumber(kmRodado, 1)} • Consumo médio: ${formatBRNumber(consumoMedio, 2)} km/L • Custo/KM: ${formatMoney(custoPorKm)}
+        `;
+
+        formFechamento.reset();
+        document.querySelector('input[name="ocorrencia"][value="nao"]').checked = true;
+        setGpsStatus('gpsChegadaStatus', 'Ainda não capturada', false);
+
+        const preview = document.getElementById('fotoPreview');
+        preview.src = '';
+        preview.style.display = 'none';
+
+        selectedFreteId = null;
+        atualizarCalculados();
+        alert('Frete fechado com sucesso!');
+      }
+
+      function buscarFretes() {
+        const query = searchInput.value.trim();
+        const results = findFretesByTerm(query);
+        renderOpenSearchResults(results);
+      }
+
+      function exportCsv() {
+        const headers = [
+          'id',
+          'status',
+          'placa',
+          'documentoMotorista',
+          'kmSaida',
+          'horimetroSaida',
+          'litrosOleo',
+          'notaFiscal',
+          'pedido',
+          'toneladasCarregadas',
+          'dataSaida',
+          'gpsSaidaLat',
+          'gpsSaidaLng',
+          'kmChegada',
+          'horimetroChegada',
+          'dataChegada',
+          'toneladasDescarregadas',
+          'ocorrencia',
+          'descricaoOcorrencia',
+          'tempoEsperaHoras',
+          'combustivelGasto',
+          'custoFrete',
+          'kmRodado',
+          'consumoMedio',
+          'custoPorKm',
+          'fotoComprovante'
+        ];
+
+        const rows = [headers];
+
+        fretes.forEach((item) => {
+          const row = headers.map((key) => {
+            let value = '';
+
+            switch (key) {
+              case 'gpsSaidaLat':
+                value = item.gpsSaida && item.gpsSaida.lat ? item.gpsSaida.lat : '';
+                break;
+              case 'gpsSaidaLng':
+                value = item.gpsSaida && item.gpsSaida.lng ? item.gpsSaida.lng : '';
+                break;
+              case 'gpsChegadaLat':
+                value = item.gpsChegada && item.gpsChegada.lat ? item.gpsChegada.lat : '';
+                break;
+              case 'gpsChegadaLng':
+                value = item.gpsChegada && item.gpsChegada.lng ? item.gpsChegada.lng : '';
+                break;
+              case 'fotoComprovante':
+                value = item.fotoComprovante || '';
+                break;
+              default:
+                value = item[key] ?? '';
+            }
+
+            if (typeof value === 'string') {
+              value = value.replace(/"/g, '""');
+              if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+                value = `"${value}"`;
+              }
+            } else if (value !== null && value !== undefined) {
+              value = String(value);
+            }
+
+            return value;
+          });
+
+          rows.push(row);
+        });
+
+        const csv = rows.map((row) => row.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'logcheck-fretes.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function initManifest() {
+        const svgIcon = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="100%" stop-color="#0ea5e9"/>
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" rx="110" fill="#0f172a"/>
+            <rect x="64" y="90" width="384" height="332" rx="36" fill="url(#g)" opacity="0.1"/>
+            <path d="M130 196h252c19 0 34 15 34 34v52c0 19-15 34-34 34H130c-19 0-34-15-34-34v-52c0-19 15-34 34-34zm0 0L256 124l126 72M140 327h232" fill="none" stroke="url(#g)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="178" cy="265" r="18" fill="#38bdf8"/>
+            <circle cx="334" cy="265" r="18" fill="#38bdf8"/>
+            <path d="M164 370h184" stroke="#f8fafc" stroke-width="18" stroke-linecap="round" opacity=".9"/>
+          </svg>
+        `;
+
+        const manifest = {
+          name: 'LogCheck - Diário de Bordo',
+          short_name: 'LogCheck',
+          start_url: './',
+          display: 'standalone',
+          background_color: '#0b1020',
+          theme_color: '#0f172a',
+          icons: [
+            {
+              src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgIcon)}`,
+              sizes: '512x512',
+              type: 'image/svg+xml',
+              purpose: 'any maskable'
+            }
+          ]
+        };
+
+        const link = document.getElementById('manifestLink');
+        link.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifest));
+      }
+
+      function registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) return;
+
+        try {
+          const swCode = `
+            self.addEventListener('install', (event) => {
+              self.skipWaiting();
+            });
+
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(self.clients.claim());
+            });
+
+            self.addEventListener('fetch', (event) => {
+              if (event.request.method !== 'GET') return;
+
+              event.respondWith(
+                caches.match(event.request).then((cached) => {
+                  if (cached) return cached;
+
+                  return fetch(event.request).then((response) => {
+                    const clone = response.clone();
+                    caches.open('logcheck-cache-v1').then((cache) => cache.put(event.request, clone));
+                    return response;
+                  }).catch(() => caches.match('./'));
+                })
+              );
+            });
+          `;
+
+          const blob = new Blob([swCode], { type: 'text/javascript' });
+          const url = URL.createObjectURL(blob);
+          navigator.serviceWorker.register(url).catch(() => {});
+        } catch (error) {
+          console.warn('Service worker não registrado:', error);
+        }
+      }
+
+      function initEvents() {
+        document.getElementById('captureGpsSaidaBtn').addEventListener('click', () => {
+          const latInput = document.createElement('input');
+          latInput.type = 'hidden';
+          latInput.id = 'gpsSaidaLat';
+          latInput.name = 'gpsSaidaLat';
+          const lngInput = document.createElement('input');
+          lngInput.type = 'hidden';
+          lngInput.id = 'gpsSaidaLng';
+          lngInput.name = 'gpsSaidaLng';
+
+          let existingLat = document.getElementById('gpsSaidaLat');
+          let existingLng = document.getElementById('gpsSaidaLng');
+
+          if (!existingLat) {
+            document.body.appendChild(latInput);
+            document.body.appendChild(lngInput);
+          } else {
+            existingLat = document.getElementById('gpsSaidaLat');
+            existingLng = document.getElementById('gpsSaidaLng');
+          }
+
+          captureLocation('gpsSaidaStatus', 'gpsSaidaLat', 'gpsSaidaLng');
+        });
+
+        document.getElementById('captureGpsChegadaBtn').addEventListener('click', () => {
+          const latInput = document.createElement('input');
+          latInput.type = 'hidden';
+          latInput.id = 'gpsChegadaLat';
+          latInput.name = 'gpsChegadaLat';
+          const lngInput = document.createElement('input');
+          lngInput.type = 'hidden';
+          lngInput.id = 'gpsChegadaLng';
+          lngInput.name = 'gpsChegadaLng';
+
+          let existingLat = document.getElementById('gpsChegadaLat');
+          let existingLng = document.getElementById('gpsChegadaLng');
+
+          if (!existingLat) {
+            document.body.appendChild(latInput);
+            document.body.appendChild(lngInput);
+          } else {
+            existingLat = document.getElementById('gpsChegadaLat');
+            existingLng = document.getElementById('gpsChegadaLng');
+          }
+
+          captureLocation('gpsChegadaStatus', 'gpsChegadaLat', 'gpsChegadaLng');
+        });
+
+        formSaida.addEventListener('submit', salvarSaida);
+        formFechamento.addEventListener('submit', fecharFrete);
+
+        document.getElementById('buscarFreteBtn').addEventListener('click', buscarFretes);
+        searchInput.addEventListener('input', buscarFretes);
+
+        document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+
+        ['kmChegada', 'combustivelGasto', 'custoFrete'].forEach((id) => {
+          document.getElementById(id).addEventListener('input', atualizarCalculados);
+        });
+
+        document.getElementById('fotoComprovante').addEventListener('change', function () {
+          const file = this.files && this.files[0];
+          const preview = document.getElementById('fotoPreview');
+
+          if (!file) {
+            preview.style.display = 'none';
+            preview.src = '';
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            preview.src = event.target.result;
+            preview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        });
+
+        document.getElementById('dataHoraChegada').value = new Date().toISOString().slice(0, 16);
+
+        document.getElementById('placaFechamento').readOnly = true;
+        document.getElementById('nfFechamento').readOnly = true;
+
+        atualizarCalculados();
+      }
+
+      function init() {
+        initManifest();
+        registerServiceWorker();
+        initEvents();
+        renderLists();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
